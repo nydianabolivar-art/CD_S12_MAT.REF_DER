@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cálculo Diferencial — Plataforma Interactiva</title>
+<style>
+:root{--bg:#0A0E27;--bg2:#060818;--bg3:#151935;--card:rgba(255,255,255,.04);--cardH:rgba(255,255,255,.08);--glass:rgba(255,255,255,.06);--border:rgba(255,255,255,.10);--borderA:rgba(255,255,255,.25);--v:#8B5CF6;--vl:#A78BFA;--p:#EC4899;--pl:#F472B6;--c:#06B6D4;--cl:#22D3EE;--e:#10B981;--el:#34D399;--a:#F59E0B;--al:#FBBF24;--r:#F43F5E;--rl:#FB7185;--tx:#F8FAFC;--ts:#CBD5E1;--tm:#94A3B8;--tf:#64748B;--gP:linear-gradient(135deg,#8B5CF6,#EC4899);--gC:linear-gradient(135deg,#06B6D4,#8B5CF6);--gW:linear-gradient(135deg,#F59E0B,#EC4899);--gS:linear-gradient(135deg,#10B981,#06B6D4);--gA:linear-gradient(120deg,#06B6D4 0%,#8B5CF6 35%,#EC4899 70%,#F59E0B 100%);--sV:0 8px 32px rgba(139,92,246,.35);--sP:0 8px 32px rgba(236,72,153,.35);--sC:0 8px 32px rgba(6,182,212,.35);--sG:0 0 60px rgba(139,92,246,.25);--sK:0 10px 40px rgba(0,0,0,.4)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:'Avenir Next','Avenir','Segoe UI','Helvetica Neue',system-ui,sans-serif;font-size:16px;line-height:1.6;color:var(--tx);background:var(--bg);min-height:100vh;overflow-x:hidden}
+.bg-aurora{position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(139,92,246,.25),transparent 50%),radial-gradient(ellipse 70% 50% at 80% 0%,rgba(236,72,153,.20),transparent 50%),radial-gradient(ellipse 60% 80% at 50% 100%,rgba(6,182,212,.18),transparent 50%),var(--bg2);animation:aurora 25s ease-in-out infinite alternate}
+@keyframes aurora{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(30deg)}}
+.bg-stars{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;animation:twinkle 4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.5)}50%{opacity:.8;transform:scale(1)}}
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
+.confetti{position:absolute;width:10px;height:14px;top:-20px;animation:cfAll linear forwards}
+@keyframes cfAll{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* MASTHEAD */
+.masthead{padding:56px 24px 36px;text-align:center;position:relative}
+.masthead .eyebrow{display:inline-block;text-transform:uppercase;letter-spacing:.32em;font-size:11px;font-weight:600;background:var(--gA);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:18px;padding:6px 18px;border:1px solid var(--border);border-radius:999px;backdrop-filter:blur(8px)}
+.masthead h1{font-family:'Didot','Bodoni 72',Georgia,serif;font-size:clamp(36px,6vw,68px);font-weight:400;letter-spacing:-.01em;line-height:1.05;margin-bottom:14px}
+.masthead h1 .w1{font-style:italic;background:var(--gA);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:gshift 6s linear infinite}
+.masthead h1 .w2{font-weight:700;color:var(--tx)}
+@keyframes gshift{0%{background-position:0% center}100%{background-position:200% center}}
+.masthead .sub{color:var(--ts);font-size:16px;font-weight:300;max-width:640px;margin:0 auto;font-style:italic}
+
+/* TABS */
+.tabs-wrapper{position:sticky;top:16px;z-index:50;margin:0 24px 36px;display:flex;justify-content:center}
+.tabs{display:inline-flex;flex-wrap:wrap;justify-content:center;padding:6px;background:rgba(10,14,39,.75);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;box-shadow:var(--sK);gap:4px}
+.tab-btn{background:none;border:none;padding:10px 18px;font-family:inherit;font-size:13px;font-weight:500;color:var(--tm);cursor:pointer;border-radius:10px;transition:all .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tab-btn:hover{color:var(--tx);background:var(--cardH)}
+.tab-btn.active{background:var(--gP);color:#fff;box-shadow:var(--sV);font-weight:600}
+.tab-btn svg{width:16px;height:16px;flex-shrink:0}
+
+/* MAIN */
+main{max-width:1200px;margin:0 auto;padding:8px 24px 80px}
+.section{display:none;animation:enter .5s cubic-bezier(.16,1,.3,1)}
+.section.active{display:block}
+@keyframes enter{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.section-title{font-family:'Didot',Georgia,serif;font-size:clamp(32px,4vw,48px);font-weight:400;letter-spacing:-.01em;margin-bottom:8px;background:var(--gA);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:gshift 8s linear infinite}
+.section-lede{color:var(--ts);font-size:16px;margin-bottom:40px;max-width:760px;border-left:2px solid var(--v);padding-left:16px;font-style:italic}
+
+/* INICIO */
+.intro-prose{font-size:18px;line-height:1.75;color:var(--ts);max-width:760px;font-weight:300}
+.intro-prose p{margin-bottom:18px}
+.intro-prose strong{font-weight:600;background:var(--gC);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.welcome-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:40px}
+.wcard{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);padding:26px 24px;border-radius:18px;cursor:pointer;transition:all .4s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
+.wcard::after{content:"";position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(139,92,246,.4),transparent 50%);opacity:0;transition:opacity .4s}
+.wcard:hover{transform:translateY(-6px) scale(1.02);border-color:var(--borderA);box-shadow:var(--sV)}
+.wcard:hover::after{opacity:.3}
+.wcard .num{font-family:'Didot',Georgia,serif;font-size:56px;background:var(--gA);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic;line-height:.9;font-weight:300}
+.wcard h3{font-family:'Didot',Georgia,serif;font-size:22px;color:var(--tx);margin:14px 0 8px;font-weight:500}
+.wcard p{font-size:14px;color:var(--tm);line-height:1.55}
+
+/* OBJETIVOS */
+.objetivos{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);padding:28px 32px;margin-top:40px;border-radius:16px;position:relative;overflow:hidden}
+.objetivos::before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--gA)}
+.objetivos h4{font-family:'Didot',Georgia,serif;font-size:22px;color:var(--tx);margin-bottom:18px;font-weight:500}
+.objetivos h4 .ac{background:var(--gW);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic}
+.objetivos ul{list-style:none;padding:0}
+.objetivos li{padding:10px 0 10px 32px;position:relative;font-size:15px;color:var(--ts);border-bottom:1px solid var(--border)}
+.objetivos li:last-child{border-bottom:none}
+.objetivos li::before{content:"";position:absolute;left:0;top:16px;width:18px;height:18px;border-radius:4px;background:var(--gC)}
+.objetivos li::after{content:"✓";position:absolute;left:4px;top:12px;color:#fff;font-size:12px;font-weight:700}
+
+/* TOPIC NAV */
+.topic-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px;padding:6px;background:var(--glass);border:1px solid var(--border);border-radius:16px;backdrop-filter:blur(10px)}
+.topic-btn{background:none;border:none;padding:10px 18px;font-family:inherit;font-size:13px;font-weight:500;color:var(--tm);cursor:pointer;border-radius:10px;transition:all .3s;flex:1;min-width:170px}
+.topic-btn:hover{color:var(--tx);background:var(--cardH)}
+.topic-btn.active{background:var(--gC);color:#fff;font-weight:600;box-shadow:var(--sC)}
+.topic-content{display:none}
+.topic-content.active{display:block;animation:enter .4s ease}
+.topic-content>h3{font-family:'Didot',Georgia,serif;font-size:32px;color:var(--tx);font-weight:500;margin-bottom:8px}
+.topic-content>h3 .deco{color:var(--vl);font-style:italic;font-weight:300}
+.topic-content>p{color:var(--ts);margin-bottom:24px;max-width:760px;font-size:15.5px}
+.topic-content h4{font-family:'Didot',Georgia,serif;font-size:22px;color:var(--tx);font-weight:500;margin:36px 0 16px;display:flex;align-items:center;gap:12px}
+.topic-content h4::before{content:"";width:4px;height:24px;background:var(--gW);border-radius:4px}
+
+/* MATH */
+.math{font-family:'Cambria Math',Cambria,serif;font-style:italic;color:var(--cl)}
+.math-block{font-family:'Cambria Math',Cambria,serif;font-style:italic;text-align:center;font-size:20px;padding:18px 24px;background:linear-gradient(135deg,rgba(139,92,246,.10),rgba(236,72,153,.10));border:1px solid var(--border);border-left:3px solid var(--v);border-radius:12px;margin:18px 0;color:var(--tx);overflow-x:auto}
+.math-rule{background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:10px 0;display:flex;align-items:center;gap:16px;transition:all .3s}
+.math-rule:hover{border-color:var(--v);background:var(--cardH);transform:translateX(4px)}
+.math-rule .label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;background:var(--gW);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;min-width:90px}
+.math-rule .formula{font-family:'Cambria Math',Cambria,serif;font-style:italic;font-size:17px;color:var(--tx)}
+
+/* EXAMPLE */
+.example{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:18px;margin:28px 0;overflow:hidden;box-shadow:var(--sK)}
+.example-header{background:var(--gP);color:#fff;padding:14px 24px;font-family:'Didot',Georgia,serif;font-style:italic;font-size:16px;font-weight:500;display:flex;align-items:center;gap:12px}
+.example-header .mk{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:8px;font-style:normal;font-weight:700}
+.example-body{padding:26px 28px}
+.example-stmt{font-style:italic;color:var(--tx);border-bottom:1px dashed var(--border);padding-bottom:18px;margin-bottom:22px;font-size:15.5px;line-height:1.7}
+.steps{counter-reset:step;list-style:none;padding:0}
+.steps>li{counter-increment:step;padding:14px 0 14px 56px;position:relative;border-bottom:1px dashed var(--border);transition:background .25s}
+.steps>li:last-child{border-bottom:none}
+.steps>li:hover{background:rgba(139,92,246,.04)}
+.steps>li::before{content:counter(step);position:absolute;left:4px;top:14px;width:36px;height:36px;background:var(--gC);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Didot',Georgia,serif;font-style:italic;font-size:16px;font-weight:600;box-shadow:0 4px 12px rgba(6,182,212,.4)}
+.step-text{font-size:14.5px;color:var(--ts);margin-bottom:8px}
+.step-text strong{color:var(--tx)}
+.step-math{font-family:'Cambria Math',Cambria,serif;font-style:italic;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.20);padding:8px 16px;border-radius:8px;margin:6px 0;font-size:15px;display:inline-block;color:var(--cl)}
+
+/* INTERPRETATION */
+.interp{margin-top:24px;padding:20px 22px;background:linear-gradient(135deg,rgba(245,158,11,.10),rgba(236,72,153,.10));border:1px solid rgba(245,158,11,.25);border-radius:12px}
+.interp .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;background:var(--gW);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.interp .lbl::before{content:"✦";font-size:14px;color:var(--a);-webkit-text-fill-color:var(--a)}
+.interp p{font-size:15px;color:var(--ts);line-height:1.7}
+.interp strong{color:var(--al);font-weight:600}
+
+/* GEO NOTE */
+.geo-note{background:linear-gradient(135deg,rgba(16,185,129,.10),rgba(6,182,212,.10));border:1px solid rgba(16,185,129,.25);padding:18px 22px;margin:20px 0;border-radius:12px;font-size:14.5px;color:var(--ts);line-height:1.65}
+.geo-note .lbl{display:flex;align-items:center;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;margin-bottom:8px;background:var(--gS);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.geo-note .lbl::before{content:"◈";color:var(--e);-webkit-text-fill-color:var(--e)}
+
+/* MINI VIZ */
+.mini-viz{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin:20px 0;text-align:center}
+.mini-viz svg{width:100%;max-width:500px;height:auto}
+.mini-viz .cap{font-size:13px;color:var(--tm);margin-top:10px;font-style:italic}
+.mini-play-btn{background:var(--gP);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;margin-top:12px;transition:transform .2s,box-shadow .2s}
+.mini-play-btn:hover{transform:translateY(-2px);box-shadow:var(--sV)}
+
+/* CAREER TABS */
+.career-tabs{display:flex;gap:8px;margin-bottom:36px;padding:6px;background:var(--glass);border:1px solid var(--border);border-radius:16px}
+.career-tab{background:none;border:none;padding:14px 24px;font-family:'Didot',Georgia,serif;font-size:18px;font-style:italic;color:var(--tm);cursor:pointer;border-radius:12px;transition:all .3s;flex:1}
+.career-tab:hover{color:var(--tx);background:var(--cardH)}
+.career-tab.active{background:var(--gW);color:#fff;font-weight:500;box-shadow:var(--sP)}
+.career-content{display:none}
+.career-content.active{display:block;animation:enter .4s ease}
+
+/* APP CARDS */
+.app-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:18px;margin:24px 0;overflow:hidden;box-shadow:var(--sK);transition:all .4s}
+.app-card:hover{border-color:var(--v);box-shadow:var(--sV)}
+.app-header{padding:18px 26px;background:linear-gradient(90deg,rgba(139,92,246,.15),rgba(236,72,153,.15));border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.app-num{font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--gC);color:#fff}
+.app-header h4{font-family:'Didot',Georgia,serif;font-size:20px;color:var(--tx);font-weight:500;margin:0;flex:1}
+.app-body{padding:24px 28px}
+
+/* EXERCISES */
+.exercises-section{margin-top:44px;padding-top:32px;border-top:1px solid var(--border)}
+.exercises-section h4{font-family:'Didot',Georgia,serif;font-size:26px;color:var(--tx);font-weight:500;margin-bottom:24px;display:flex;align-items:center;gap:14px}
+.exercises-section h4::before{content:"";display:inline-block;width:6px;height:28px;background:var(--gA);border-radius:3px}
+.exercise{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:14px;position:relative;transition:all .3s}
+.exercise:hover{border-color:var(--c);background:var(--cardH)}
+.exercise .ex-num{position:absolute;left:-1px;top:-1px;background:var(--gW);color:#fff;font-size:11px;letter-spacing:.12em;padding:5px 14px;border-radius:14px 0 14px 0;font-weight:700;text-transform:uppercase}
+.ex-content{margin-top:18px;font-size:15px;color:var(--ts);line-height:1.65}
+.toggle-sol{margin-top:14px;background:transparent;border:1px solid var(--v);color:var(--vl);padding:7px 16px;font-family:inherit;font-size:12px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;cursor:pointer;border-radius:8px;transition:all .3s;display:inline-flex;align-items:center;gap:6px}
+.toggle-sol:hover{background:var(--gP);color:#fff;border-color:transparent;box-shadow:var(--sV)}
+.toggle-sol::before{content:"▸";transition:transform .3s;font-size:9px}
+.toggle-sol.open::before{transform:rotate(90deg)}
+.sol{display:none;margin-top:16px;padding:18px 22px;background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(6,182,212,.08));border:1px solid rgba(16,185,129,.25);border-radius:12px;font-size:14.5px;color:var(--ts);line-height:1.65}
+.sol.visible{display:block;animation:enter .3s ease}
+.sol p{margin-bottom:8px}
+.sol p:last-child{margin-bottom:0}
+.sol .si{font-style:italic;color:var(--el);margin-top:10px;padding-top:10px;border-top:1px dashed rgba(16,185,129,.25)}
+
+/* VISUALIZADOR */
+.viz-ctrl{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:18px;padding:26px;margin-bottom:24px;box-shadow:var(--sK)}
+.viz-row{display:flex;flex-wrap:wrap;gap:14px;align-items:end;margin-bottom:16px}
+.viz-row:last-child{margin-bottom:0}
+.viz-field{flex:1;min-width:200px}
+.viz-field label{display:flex;align-items:center;gap:6px;font-size:11px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--tm);margin-bottom:8px}
+.viz-field label .dot{width:6px;height:6px;border-radius:50%;background:var(--v)}
+.viz-field input,.viz-field select{width:100%;padding:11px 14px;font-family:'Cambria Math',Cambria,serif;font-size:15px;border:1px solid var(--border);border-radius:10px;background:var(--glass);color:var(--tx);transition:all .3s;outline:none}
+.viz-field input:focus,.viz-field select:focus{border-color:var(--v);background:var(--cardH);box-shadow:0 0 0 3px rgba(139,92,246,.20)}
+.viz-field select option{background:var(--bg3)}
+.viz-btn{background:var(--gP);color:#fff;border:none;padding:11px 24px;font-family:inherit;font-size:13px;letter-spacing:.08em;font-weight:600;text-transform:uppercase;cursor:pointer;border-radius:10px;transition:all .3s;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--sV)}
+.viz-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(139,92,246,.50)}
+.viz-btn.sec{background:var(--card);border:1px solid var(--border);box-shadow:none;color:var(--tx)}
+.viz-btn.sec:hover{background:var(--cardH);border-color:var(--v)}
+.viz-btn.play{background:var(--gS);box-shadow:0 8px 24px rgba(16,185,129,.35)}
+.viz-btn.play.on{background:var(--gW)}
+.viz-hint{font-size:12px;color:var(--tm);margin-top:12px;line-height:1.7}
+.viz-hint code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--glass);padding:2px 8px;border-radius:4px;font-size:11px;color:var(--cl);border:1px solid var(--border)}
+.toggle-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding-top:8px;border-top:1px dashed var(--border);margin-top:4px}
+.tchk{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;user-select:none;color:var(--ts);padding:6px 12px;border-radius:8px;transition:background .2s}
+.tchk:hover{background:var(--cardH)}
+.tchk input{width:16px;height:16px;cursor:pointer;accent-color:var(--v)}
+.slider-group{margin-top:14px;padding:14px 16px;background:var(--glass);border:1px solid var(--border);border-radius:12px}
+.slider-group label{display:flex;justify-content:space-between;align-items:center;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;color:var(--tm);margin-bottom:10px}
+.slider-group label .val{font-family:'Cambria Math',Cambria,serif;font-style:italic;font-size:14px;color:var(--cl);letter-spacing:0;text-transform:none}
+.slider{width:100%;-webkit-appearance:none;appearance:none;height:6px;background:var(--bg3);border-radius:3px;outline:none;cursor:pointer}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:var(--gP);border-radius:50%;cursor:pointer;box-shadow:0 0 0 4px rgba(139,92,246,.20),0 4px 12px rgba(139,92,246,.4);transition:transform .2s}
+.slider::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.viz-canvas{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:20px;box-shadow:var(--sK)}
+.viz-canvas svg{width:100%;height:auto;display:block;border-radius:12px}
+.live-readout{display:flex;flex-wrap:wrap;gap:14px;padding:14px 18px;margin-top:14px;background:var(--glass);border:1px solid var(--border);border-radius:12px}
+.ro-item{flex:1;min-width:140px}
+.ro-label{font-size:10px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--tm);margin-bottom:4px}
+.ro-val{font-family:'Cambria Math',Cambria,serif;font-style:italic;font-size:18px;color:var(--tx)}
+.ro-x .ro-label{color:var(--vl)}.ro-fx .ro-label{color:var(--pl)}.ro-fp .ro-label{color:var(--al)}.ro-fpp .ro-label{color:var(--el)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;padding:12px 16px;background:var(--glass);border:1px solid var(--border);border-radius:12px;font-size:12px}
+.legend-item{display:flex;align-items:center;gap:8px;color:var(--ts)}
+.lsw{width:24px;height:4px;border-radius:2px;box-shadow:0 0 8px currentColor}
+.viz-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:20px}
+.info-panel{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:16px;padding:20px 24px;position:relative;overflow:hidden}
+.info-panel::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:var(--gA)}
+.info-panel h5{font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:var(--tm);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.info-panel h5::before{content:"◆";color:var(--vl);font-size:10px}
+.info-panel ul{list-style:none;padding:0;font-size:13.5px}
+.info-panel li{padding:8px 0;color:var(--ts);display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px dashed var(--border)}
+.info-panel li:last-child{border-bottom:none}
+.info-panel li .pt{font-family:'Cambria Math',Cambria,serif;font-style:italic;color:var(--cl)}
+.badge{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.badge.max{background:rgba(244,63,94,.15);color:var(--rl);border:1px solid rgba(244,63,94,.3)}
+.badge.min{background:rgba(16,185,129,.15);color:var(--el);border:1px solid rgba(16,185,129,.3)}
+.badge.inf{background:rgba(245,158,11,.15);color:var(--al);border:1px solid rgba(245,158,11,.3)}
+.badge.up{background:rgba(34,211,238,.15);color:var(--cl);border:1px solid rgba(34,211,238,.3)}
+.badge.dn{background:rgba(167,139,250,.15);color:var(--vl);border:1px solid rgba(167,139,250,.3)}
+.err-box{background:rgba(244,63,94,.10);border:1px solid rgba(244,63,94,.35);color:var(--rl);padding:12px 18px;border-radius:10px;font-size:13px;margin-top:12px;display:none}
+.err-box.on{display:block}
+
+/* QUIZ */
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:14px}
+.prog-disp{font-family:'Didot',Georgia,serif;font-style:italic;font-size:15px;color:var(--ts)}
+.prog-disp strong{background:var(--gA);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;font-size:18px;font-style:normal}
+.prog-bar{height:6px;background:var(--glass);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:32px}
+.prog-fill{height:100%;background:var(--gA);background-size:200%;animation:gshift 3s linear infinite;width:0;transition:width .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 16px rgba(139,92,246,.6)}
+.qcard{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:18px;padding:28px 32px;margin-bottom:22px;box-shadow:var(--sK);position:relative;overflow:hidden;transition:all .4s}
+.qcard::before{content:"";position:absolute;left:0;top:0;height:100%;width:4px;background:var(--gP);transition:background .4s}
+.qcard.correct::before{background:var(--gS)}
+.qcard.incorrect::before{background:linear-gradient(180deg,var(--r),var(--a))}
+.qcard.shake{animation:shake .5s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.q-num{font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;margin-bottom:12px;background:var(--gW);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.q-text{font-size:17px;color:var(--tx);line-height:1.6;margin-bottom:22px}
+.q-text .math{color:var(--cl);font-weight:500}
+.options{list-style:none;padding:0}
+.option{background:var(--glass);border:1.5px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:10px;cursor:pointer;font-size:14.5px;color:var(--ts);transition:all .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:14px}
+.option:hover:not(.disabled){border-color:var(--v);background:var(--cardH);color:var(--tx);transform:translateX(6px);box-shadow:var(--sV)}
+.opt-letter{width:30px;height:30px;border-radius:8px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:'Didot',Georgia,serif;font-style:italic;font-size:15px;font-weight:600;flex-shrink:0;transition:all .3s}
+.option.disabled{cursor:not-allowed;opacity:.6}
+.option.correct-answer{background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(6,182,212,.15));border-color:var(--e);color:var(--el);font-weight:500;opacity:1}
+.option.correct-answer .opt-letter{background:var(--gS);color:#fff;border-color:transparent;box-shadow:0 0 16px rgba(16,185,129,.5)}
+.option.wrong-answer{background:linear-gradient(135deg,rgba(244,63,94,.15),rgba(245,158,11,.10));border-color:var(--r);color:var(--rl);opacity:1}
+.option.wrong-answer .opt-letter{background:linear-gradient(135deg,var(--r),var(--a));color:#fff;border-color:transparent}
+.feedback{margin-top:16px;padding:16px 20px;border-radius:12px;display:none;font-size:14.5px;line-height:1.65}
+.feedback.visible{display:block;animation:enter .3s ease}
+.feedback.correct{background:linear-gradient(135deg,rgba(16,185,129,.10),rgba(6,182,212,.10));border:1px solid rgba(16,185,129,.30);color:var(--ts)}
+.feedback.incorrect{background:linear-gradient(135deg,rgba(244,63,94,.10),rgba(245,158,11,.08));border:1px solid rgba(244,63,94,.30);color:var(--ts)}
+.feedback .flbl{font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.feedback.correct .flbl{color:var(--el)}.feedback.incorrect .flbl{color:var(--rl)}
+.feedback .flbl::before{content:"✦";font-size:14px}
+.quiz-actions{display:flex;justify-content:center;margin:36px 0 16px;gap:14px;flex-wrap:wrap}
+.results-card{display:none;background:var(--card);backdrop-filter:blur(20px);border:1px solid var(--borderA);border-radius:24px;padding:44px 40px;text-align:center;margin-top:28px;box-shadow:var(--sG);position:relative;overflow:hidden}
+.results-card::before{content:"";position:absolute;inset:-2px;background:var(--gA);background-size:200%;border-radius:24px;z-index:-1;animation:gshift 6s linear infinite}
+.results-card::after{content:"";position:absolute;inset:1px;background:var(--bg3);border-radius:23px;z-index:-1}
+.results-card.visible{display:block;animation:enter .5s ease}
+.results-card h3{font-family:'Didot',Georgia,serif;font-size:32px;font-weight:500;font-style:italic;margin-bottom:8px;background:var(--gA);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.score-circle{width:160px;height:160px;margin:26px auto 18px;position:relative}
+.score-circle svg{transform:rotate(-90deg)}
+.score-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.score-text span{font-family:'Didot',Georgia,serif;font-size:42px;font-weight:700;background:var(--gA);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.score-text small{font-size:14px;color:var(--tm);display:block;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.verdict{font-style:italic;font-size:17px;color:var(--ts);max-width:540px;margin:0 auto 18px;line-height:1.7}
+.example-stmt{font-style:italic;color:var(--tx);border-bottom:1px dashed var(--border);padding-bottom:18px;margin-bottom:22px;font-size:15.5px;line-height:1.7}
+
+/* FOOTER */
+footer{text-align:center;padding:48px 24px 36px;margin-top:56px;position:relative}
+footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(80%,600px);height:1px;background:linear-gradient(90deg,transparent,var(--v),transparent)}
+footer .credit{font-family:'Didot',Georgia,serif;font-style:italic;font-size:22px;letter-spacing:.04em;background:var(--gA);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:gshift 8s linear infinite;font-weight:500;display:inline-flex;align-items:center;gap:16px}
+footer .credit::before,footer .credit::after{content:"✦";color:var(--a);-webkit-text-fill-color:var(--a);font-size:14px;animation:spin 8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer .inst{font-size:11px;color:var(--tf);margin-top:14px;letter-spacing:.20em;text-transform:uppercase}
+
+@media(max-width:720px){.masthead{padding:36px 20px 24px}.section-title{font-size:28px}.career-tab{padding:12px 14px;font-size:15px}.qcard{padding:22px}.example-body,.app-body{padding:20px}main{padding:8px 16px 60px}.tabs-wrapper{margin:0 12px 24px}.tab-btn{padding:9px 12px;font-size:12px}}
+</style>
+</head>
+<body>
+
+<div class="bg-aurora"></div>
+<div class="bg-stars" id="stars"></div>
+<div class="confetti-container" id="cfBox"></div>
+
+<header class="masthead">
+  <div class="eyebrow">Plataforma Interactiva</div>
+  <h1><span class="w1">Cálculo</span> <span class="w2">Diferencial</span></h1>
+  <div class="sub">Derivadas trigonométricas · Regla de la cadena · Criterios de optimización · Aplicaciones profesionales</div>
+</header>
+
+<div class="tabs-wrapper">
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>Inicio</button>
+    <button class="tab-btn" data-tab="tutoriales"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Tutoriales</button>
+    <button class="tab-btn" data-tab="aplicaciones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Aplicaciones</button>
+    <button class="tab-btn" data-tab="visualizador"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 6-6"/></svg>Visualizador</button>
+    <button class="tab-btn" data-tab="autoevaluacion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Autoevaluación</button>
+  </nav>
+</div>
+
+<main>
+
+<!-- INICIO -->
+<section id="inicio" class="section active">
+  <h2 class="section-title">Bienvenida</h2>
+  <p class="section-lede">Un espacio diseñado para reforzar conceptos fundamentales de cálculo diferencial mediante teoría, aplicación profesional y verificación computacional.</p>
+  <div class="intro-prose">
+    <p>El cálculo diferencial no es un conjunto de fórmulas memorizadas; es un <strong>lenguaje para describir el cambio</strong>. Cada derivada responde a una pregunta concreta: ¿qué tan rápido cambia esta cantidad? ¿En qué momento alcanza su máximo? ¿Cómo se comporta su curvatura?</p>
+    <p>Esta plataforma articula cinco rutas —tutoriales con interpretación geométrica, aplicaciones contextualizadas por programa, visualizador gráfico interactivo y autoevaluación tipo Saber Pro— para que el aprendizaje no termine en el cálculo, sino en la <strong>comprensión</strong>.</p>
+  </div>
+  <div class="objetivos">
+    <h4>Objetivos de <span class="ac">aprendizaje</span></h4>
+    <ul>
+      <li>Aplicar las reglas de derivación de funciones trigonométricas y la regla de la cadena con rigor procedimental.</li>
+      <li>Identificar puntos críticos, máximos, mínimos e inflexión mediante los criterios de primera y segunda derivada.</li>
+      <li>Interpretar geométricamente la concavidad, convexidad y los cambios cualitativos del comportamiento de una función.</li>
+      <li>Modelar y resolver problemas de optimización en contextos de ingeniería de software y finanzas internacionales.</li>
+      <li>Verificar resultados analíticos contra representaciones gráficas computacionales.</li>
+    </ul>
+  </div>
+  <div class="welcome-grid">
+    <div class="wcard" data-jump="tutoriales"><div class="num">02</div><h3>Tutoriales</h3><p>Cuatro módulos teóricos con ejemplos resueltos paso a paso e interpretación del significado.</p></div>
+    <div class="wcard" data-jump="aplicaciones"><div class="num">03</div><h3>Aplicaciones</h3><p>Tres aplicaciones modelo y cinco ejercicios contextualizados por programa académico.</p></div>
+    <div class="wcard" data-jump="visualizador"><div class="num">04</div><h3>Visualizador</h3><p>Graficador interactivo con tangente deslizable, modo "play" y detección automática.</p></div>
+    <div class="wcard" data-jump="autoevaluacion"><div class="num">05</div><h3>Autoevaluación</h3><p>Diez preguntas tipo Saber Pro con retroalimentación inmediata y reporte de desempeño.</p></div>
+  </div>
+</section>
+
+<!-- TUTORIALES -->
+<section id="tutoriales" class="section">
+  <h2 class="section-title">Tutoriales</h2>
+  <p class="section-lede">Cada tema combina la enunciación rigurosa de la regla, un ejemplo trabajado paso a paso y la lectura geométrica del resultado.</p>
+  <div class="topic-nav">
+    <button class="topic-btn active" data-topic="trig">Derivadas Trigonométricas</button>
+    <button class="topic-btn" data-topic="cadena">Regla de la Cadena</button>
+    <button class="topic-btn" data-topic="primera">Primera Derivada</button>
+    <button class="topic-btn" data-topic="segunda">Segunda Derivada</button>
+  </div>
+
+  <div class="topic-content active" data-topic="trig">
+    <h3>Derivadas <span class="deco">de las funciones trigonométricas</span></h3>
+    <p>Las funciones trigonométricas describen fenómenos oscilatorios. Sus derivadas se obtienen del límite fundamental <span class="math">lim<sub>h→0</sub> sen(h)/h = 1</span> y son la base de todo análisis de movimiento periódico, señales y sistemas dinámicos.</p>
+    <h4>Reglas fundamentales</h4>
+    <div class="math-rule"><span class="label">Seno</span><span class="formula">d/dx [sen(x)] = cos(x)</span></div>
+    <div class="math-rule"><span class="label">Coseno</span><span class="formula">d/dx [cos(x)] = −sen(x)</span></div>
+    <div class="math-rule"><span class="label">Tangente</span><span class="formula">d/dx [tan(x)] = sec²(x)</span></div>
+    <div class="math-rule"><span class="label">Cotangente</span><span class="formula">d/dx [cot(x)] = −csc²(x)</span></div>
+    <div class="math-rule"><span class="label">Secante</span><span class="formula">d/dx [sec(x)] = sec(x)·tan(x)</span></div>
+    <div class="math-rule"><span class="label">Cosecante</span><span class="formula">d/dx [csc(x)] = −csc(x)·cot(x)</span></div>
+    <div class="example">
+      <div class="example-header"><span class="mk">§</span>Ejemplo trabajado</div>
+      <div class="example-body">
+        <div class="example-stmt">Calcular la derivada de <span class="math">f(x) = sen(x)·cos(x)</span> e interpretar geométricamente el resultado.</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Identificar la regla aplicable.</strong> La función es un producto; aplicamos la regla del producto.</div><div class="step-math">d/dx [u·v] = u′·v + u·v′</div></li>
+          <li><div class="step-text"><strong>Aplicar la regla del producto.</strong></div><div class="step-math">f′(x) = cos(x)·cos(x) + sen(x)·(−sen(x))</div></li>
+          <li><div class="step-text"><strong>Simplificar con identidad trigonométrica.</strong></div><div class="step-math">f′(x) = cos²(x) − sen²(x) = cos(2x)</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>La razón de cambio instantánea de sen(x)·cos(x) coincide con cos(2x), una función que oscila con <strong>periodo π</strong> —la mitad del periodo de la función original. Los ceros de la derivada (x = π/4 + kπ/2) corresponden a los máximos y mínimos de f. En señales, el producto de dos sinusoides genera una sinusoide de frecuencia doble.</p></div>
+        <div class="mini-viz"><svg id="trigSvg" viewBox="0 0 500 200"></svg><div class="cap"><span class="math">f(x) = sen(x)·cos(x)</span> con tangente animada</div><button class="mini-play-btn" data-mini="trig">▶ Animar tangente</button></div>
+      </div>
+    </div>
+    <div class="geo-note"><span class="lbl">Lectura geométrica</span>La derivada de <span class="math">sen(x)</span> es <span class="math">cos(x)</span>: donde la curva es más empinada (mayor pendiente), la derivada alcanza su máximo. Visualmente, las dos curvas están desfasadas exactamente 90°.</div>
+  </div>
+
+  <div class="topic-content" data-topic="cadena">
+    <h3>Regla de la <span class="deco">Cadena</span></h3>
+    <p>Cuando una función es composición de otras dos, la derivada se construye como producto: <strong>derivada externa evaluada en la interna</strong>, multiplicada por <strong>derivada de la interna</strong>. Es la herramienta más poderosa del cálculo diferencial.</p>
+    <div class="math-block">d/dx [ f(g(x)) ] = f′(g(x)) · g′(x)</div>
+    <h4>Identificación de la composición</h4>
+    <div class="math-rule"><span class="label">Externa</span><span class="formula">f(u) — la operación de afuera (sen, cos, potencia, exponencial)</span></div>
+    <div class="math-rule"><span class="label">Interna</span><span class="formula">u = g(x) — el argumento que se modifica</span></div>
+    <div class="example">
+      <div class="example-header"><span class="mk">§</span>Ejemplo trabajado</div>
+      <div class="example-body">
+        <div class="example-stmt">Calcular la derivada de <span class="math">f(x) = sen(3x² + 1)</span> e interpretar el papel de cada factor.</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Reconocer la composición.</strong></div><div class="step-math">Externa: sen(u) | Interna: u = 3x² + 1</div></li>
+          <li><div class="step-text"><strong>Derivar la función externa</strong> manteniendo la interna sin tocar.</div><div class="step-math">d/du [sen(u)] = cos(u) = cos(3x² + 1)</div></li>
+          <li><div class="step-text"><strong>Derivar la función interna.</strong></div><div class="step-math">d/dx [3x² + 1] = 6x</div></li>
+          <li><div class="step-text"><strong>Multiplicar ambas derivadas.</strong></div><div class="step-math">f′(x) = 6x · cos(3x² + 1)</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>La pendiente depende de dos factores: el <strong>factor lineal 6x</strong> (crece con |x|) y el <strong>factor oscilante cos(3x²+1)</strong> (comprime sus oscilaciones). El resultado es una función cuyas oscilaciones aumentan en amplitud y frecuencia —fenómeno típico de sistemas con aceleración paramétrica.</p></div>
+      </div>
+    </div>
+    <h4>Cadena de orden superior</h4>
+    <div class="math-block">d/dx [ f(g(h(x))) ] = f′(g(h(x))) · g′(h(x)) · h′(x)</div>
+    <div class="geo-note"><span class="lbl">Lectura geométrica</span>La regla de la cadena traduce un principio físico: si la temperatura depende de la posición y la posición depende del tiempo, el cambio de temperatura por segundo es el producto de las dos tasas.</div>
+  </div>
+
+  <div class="topic-content" data-topic="primera">
+    <h3>Criterio de la <span class="deco">Primera Derivada</span></h3>
+    <p>La primera derivada captura la pendiente instantánea. Su <strong>signo</strong> indica si la función crece o decrece; sus <strong>ceros</strong> son los candidatos a máximos, mínimos o inflexiones horizontales.</p>
+    <h4>Definiciones</h4>
+    <div class="math-rule"><span class="label">P. crítico</span><span class="formula">c es punto crítico si f′(c) = 0 ó f′(c) no existe</span></div>
+    <div class="math-rule"><span class="label">Creciente</span><span class="formula">f′(x) &gt; 0 en un intervalo ⇒ f crece</span></div>
+    <div class="math-rule"><span class="label">Decreciente</span><span class="formula">f′(x) &lt; 0 en un intervalo ⇒ f decrece</span></div>
+    <h4>Criterio para extremos</h4>
+    <div class="math-rule"><span class="label">Máximo</span><span class="formula">Si f′ pasa de + a − en c ⇒ máximo local</span></div>
+    <div class="math-rule"><span class="label">Mínimo</span><span class="formula">Si f′ pasa de − a + en c ⇒ mínimo local</span></div>
+    <div class="math-rule"><span class="label">No-extremo</span><span class="formula">Si f′ no cambia de signo en c ⇒ ni máximo ni mínimo</span></div>
+    <div class="example">
+      <div class="example-header"><span class="mk">§</span>Ejemplo trabajado</div>
+      <div class="example-body">
+        <div class="example-stmt">Hallar y clasificar los puntos críticos de <span class="math">f(x) = x³ − 3x² + 2</span>.</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Calcular la primera derivada.</strong></div><div class="step-math">f′(x) = 3x² − 6x</div></li>
+          <li><div class="step-text"><strong>Igualar a cero.</strong></div><div class="step-math">3x(x − 2) = 0 ⇒ x = 0 ó x = 2</div></li>
+          <li><div class="step-text"><strong>Analizar el signo de f′(x).</strong></div><div class="step-math">f′(−1) = 9 (+) | f′(1) = −3 (−) | f′(3) = 9 (+)</div></li>
+          <li><div class="step-text"><strong>Aplicar el criterio.</strong></div><div class="step-math">f(0) = 2 → máximo local | f(2) = −2 → mínimo local</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>La curva asciende hasta un "pico" en (0, 2), desciende hasta un "valle" en (2, −2) y vuelve a ascender. Los puntos críticos son donde la <strong>recta tangente es horizontal</strong>: la función momentáneamente se detiene antes de cambiar de dirección.</p></div>
+        <div class="mini-viz"><svg id="cubicSvg" viewBox="0 0 500 220"></svg><div class="cap"><span class="math">f(x) = x³ − 3x² + 2</span> con puntos críticos resaltados</div><button class="mini-play-btn" data-mini="cubic">▶ Animar tangente</button></div>
+      </div>
+    </div>
+    <div class="geo-note"><span class="lbl">Lectura geométrica</span>Imagine una pelota rodando sobre la curva. Donde la pendiente es positiva sube; donde es negativa baja. Los puntos críticos son los lugares donde se equilibraría —en una cima (máximo) o en un valle (mínimo).</div>
+  </div>
+
+  <div class="topic-content" data-topic="segunda">
+    <h3>Segunda Derivada <span class="deco">y Concavidad</span></h3>
+    <p>La segunda derivada mide la <strong>"aceleración"</strong> de la función. Su signo determina si la curva se abre hacia arriba (∪) o hacia abajo (∩); sus ceros con cambio de signo son los puntos de inflexión.</p>
+    <h4>Concavidad</h4>
+    <div class="math-rule"><span class="label">Cóncava ↑</span><span class="formula">f″(x) &gt; 0 ⇒ curva abierta hacia arriba (∪)</span></div>
+    <div class="math-rule"><span class="label">Cóncava ↓</span><span class="formula">f″(x) &lt; 0 ⇒ curva abierta hacia abajo (∩)</span></div>
+    <div class="math-rule"><span class="label">Inflexión</span><span class="formula">f″(c) = 0 con cambio de signo ⇒ punto de inflexión en c</span></div>
+    <h4>Criterio para extremos</h4>
+    <div class="math-rule"><span class="label">Máximo</span><span class="formula">f″(c) &lt; 0 ⇒ máximo local en c</span></div>
+    <div class="math-rule"><span class="label">Mínimo</span><span class="formula">f″(c) &gt; 0 ⇒ mínimo local en c</span></div>
+    <div class="math-rule"><span class="label">Inconcluso</span><span class="formula">f″(c) = 0 ⇒ usar el criterio de la primera derivada</span></div>
+    <div class="example">
+      <div class="example-header"><span class="mk">§</span>Ejemplo trabajado</div>
+      <div class="example-body">
+        <div class="example-stmt">Para <span class="math">f(x) = x³ − 3x² + 2</span>, clasificar los puntos críticos y hallar el punto de inflexión.</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Puntos críticos conocidos:</strong> x = 0 y x = 2.</div><div class="step-math">f′(x) = 3x² − 6x</div></li>
+          <li><div class="step-text"><strong>Calcular la segunda derivada.</strong></div><div class="step-math">f″(x) = 6x − 6</div></li>
+          <li><div class="step-text"><strong>Evaluar f″ en cada punto crítico.</strong></div><div class="step-math">f″(0) = −6 &lt; 0 ⇒ máximo local en (0, 2)</div><div class="step-math">f″(2) = +6 &gt; 0 ⇒ mínimo local en (2, −2)</div></li>
+          <li><div class="step-text"><strong>Hallar el punto de inflexión: f″(x) = 0.</strong></div><div class="step-math">6x − 6 = 0 ⇒ x = 1 → inflexión en (1, 0)</div></li>
+          <li><div class="step-text"><strong>Verificar el cambio de signo de f″.</strong></div><div class="step-math">f″(0.5) = −3 (∩) | f″(1.5) = +3 (∪) — cambia signo en x = 1</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>La curva pasa de cóncava abajo a cóncava arriba en x = 1. Aunque <strong>no es un extremo</strong>, este punto de inflexión es un indicador crítico: en finanzas señala el cambio entre crecimiento acelerado y desacelerado; en software, el punto donde la complejidad pasa de explotar a estabilizarse.</p></div>
+      </div>
+    </div>
+    <div class="geo-note"><span class="lbl">Lectura geométrica</span>Si la primera derivada es la "velocidad", la segunda es la "aceleración". Cóncava arriba → pendiente crece (acelera). Cóncava abajo → pendiente decrece (desacelera). El punto de inflexión es donde esa aceleración cambia de signo.</div>
+  </div>
+</section>
+
+<!-- APLICACIONES -->
+<section id="aplicaciones" class="section">
+  <h2 class="section-title">Aplicaciones</h2>
+  <p class="section-lede">Las herramientas matemáticas adquieren sentido cuando se aplican a problemas profesionales reales. Tres aplicaciones modelo y cinco ejercicios por programa.</p>
+  <div class="career-tabs">
+    <button class="career-tab active" data-career="sw">Ingeniería de Software</button>
+    <button class="career-tab" data-career="fi">Finanzas &amp; Comercio</button>
+  </div>
+
+  <!-- SOFTWARE -->
+  <div class="career-content active" data-career="sw">
+    <div class="app-card">
+      <div class="app-header"><span class="app-num">App 01</span><h4>Optimización de latencia en sistema distribuido</h4></div>
+      <div class="app-body">
+        <div class="example-stmt">Un sistema distribuido presenta la función de latencia <span class="math">L(t) = 200 + 50·sen(πt/6) + 8t</span> milisegundos durante <span class="math">t ∈ [0, 12]</span> horas. ¿Cuándo es mínima la latencia?</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Calcular la derivada.</strong></div><div class="step-math">L′(t) = (50π/6)·cos(πt/6) + 8 ≈ 26.18·cos(πt/6) + 8</div></li>
+          <li><div class="step-text"><strong>Igualar a cero para hallar puntos críticos.</strong></div><div class="step-math">cos(πt/6) = −8/26.18 ≈ −0.3056 ⇒ t ≈ 3.59 hr y t ≈ 8.41 hr</div></li>
+          <li><div class="step-text"><strong>Aplicar criterio de segunda derivada.</strong></div><div class="step-math">L″(t) = −13.71·sen(πt/6)</div><div class="step-math">L″(3.59) ≈ −13.07 &lt; 0 ⇒ máximo local</div><div class="step-math">L″(8.41) ≈ +13.07 &gt; 0 ⇒ mínimo local</div></li>
+          <li><div class="step-text"><strong>Calcular el valor mínimo.</strong></div><div class="step-math">L(8.41) ≈ 219.63 ms</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>La latencia mínima ocurre alrededor de las <strong>8:25 a.m.</strong>, cuando la componente oscilatoria contrarresta el crecimiento lineal del tráfico. Este es el momento óptimo para programar despliegues, migraciones o tareas críticas de mantenimiento.</p></div>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-header"><span class="app-num">App 02</span><h4>Tasa de cambio de tiempo de ejecución algorítmico</h4></div>
+      <div class="app-body">
+        <div class="example-stmt">El tiempo de ejecución de un algoritmo es <span class="math">T(n) = n²·sen(n/100) + 1000n</span> ms. Calcular la tasa de cambio en <span class="math">n = 300</span>.</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Aplicar regla del producto y regla de la cadena.</strong></div><div class="step-math">T′(n) = 2n·sen(n/100) + (n²/100)·cos(n/100) + 1000</div></li>
+          <li><div class="step-text"><strong>Evaluar en n = 300.</strong></div><div class="step-math">sen(3) ≈ 0.1411 | cos(3) ≈ −0.9899</div><div class="step-math">T′(300) ≈ 84.66 − 890.91 + 1000 ≈ 193.75 ms/elemento</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>A <span class="math">n = 300</span>, agregar un elemento adicional incrementa el tiempo en <strong>~193.75 ms</strong> —notablemente menor que el coeficiente lineal puro de 1000 ms. La componente oscilatoria está "frenando" el crecimiento. El comportamiento no es monótono y exige medir T′(n) en diferentes regímenes antes de decidir el despliegue.</p></div>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-header"><span class="app-num">App 03</span><h4>Optimización del uso de memoria en caché dinámico</h4></div>
+      <div class="app-body">
+        <div class="example-stmt">El uso de memoria es <span class="math">M(x) = 100 + 30·cos(2x) + x²</span> MB, con <span class="math">x ∈ [0, 4]</span> horas. Hallar puntos críticos.</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Calcular M′(x).</strong></div><div class="step-math">M′(x) = −60·sen(2x) + 2x</div></li>
+          <li><div class="step-text"><strong>Resolver M′(x) = 0 numéricamente.</strong> Soluciones: x ≈ 1.50, x ≈ 2.78.</div></li>
+          <li><div class="step-text"><strong>Calcular M″(x) y aplicar el criterio.</strong></div><div class="step-math">M″(x) = −120·cos(2x) + 2</div><div class="step-math">M″(1.50) ≈ +120.79 &gt; 0 ⇒ mínimo local</div><div class="step-math">M″(2.78) ≈ −88.95 &lt; 0 ⇒ máximo local</div></li>
+          <li><div class="step-text"><strong>Calcular los valores.</strong></div><div class="step-math">M(1.50) ≈ 72.55 MB | M(2.78) ≈ 130.36 MB</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>El sistema alcanza un mínimo (~73 MB) cerca de la 1.5 hora —ventana favorable para introducir nuevas estructuras en caché. El máximo (~130 MB) cerca de las 2.78 horas exige evicción o escalado horizontal. Estos puntos guían políticas dinámicas de gestión de recursos.</p></div>
+      </div>
+    </div>
+    <div class="exercises-section">
+      <h4>Ejercicios de práctica</h4>
+      <div class="exercise"><span class="ex-num">Ej. 1</span><div class="ex-content">Calcular la derivada de <span class="math">T(n) = sen(n²) − 2n</span> y evaluar en <span class="math">n = 1</span>.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p>Regla de la cadena: <span class="math">T′(n) = 2n·cos(n²) − 2</span>.</p><p>En <span class="math">n = 1</span>: <span class="math">T′(1) ≈ −0.919</span>.</p><p class="si">El tiempo decrece a tasa de 0.919 unidades por unidad de entrada.</p></div></div>
+      <div class="exercise"><span class="ex-num">Ej. 2</span><div class="ex-content">La complejidad ciclomática es <span class="math">C(x) = x³ − 6x² + 9x</span>. Hallar puntos críticos y clasificarlos.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p><span class="math">C′(x) = 3(x−1)(x−3) = 0 ⇒ x = 1, x = 3</span>.</p><p><span class="math">C″(1) = −6</span> (máximo); <span class="math">C″(3) = 6</span> (mínimo). Valores: <span class="math">C(1) = 4</span>, <span class="math">C(3) = 0</span>.</p><p class="si">Agregar 1 rama produce un máximo de complejidad (4); 3 ramas la regresan a 0 —indica refactorización.</p></div></div>
+      <div class="exercise"><span class="ex-num">Ej. 3</span><div class="ex-content">La latencia es <span class="math">L(t) = 5·cos(t/2)</span> ms. Hallar máximos y mínimos en <span class="math">t ∈ [0, 4π]</span>.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p><span class="math">L′(t) = −(5/2)·sen(t/2) = 0 ⇒ t = 0, 2π, 4π</span>.</p><p>Máximo absoluto: 5 ms. Mínimo: −5 ms en t = 2π.</p><p class="si">Valor negativo indica respuesta más rápida que el promedio —offset respecto a la línea base.</p></div></div>
+      <div class="exercise"><span class="ex-num">Ej. 4</span><div class="ex-content">Para <span class="math">E(n) = n²·ln(n)</span>, determinar concavidad y punto de inflexión.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p><span class="math">E″(n) = 2·ln(n) + 3 = 0 ⇒ n = e^(−3/2) ≈ 0.223</span>.</p><p>Para <span class="math">n &gt; 0.223</span>: cóncava arriba; para <span class="math">n &lt; 0.223</span>: cóncava abajo.</p><p class="si">El costo se acelera a partir de n ≈ 0.223; para entradas grandes siempre crece de forma acelerada.</p></div></div>
+      <div class="exercise"><span class="ex-num">Ej. 5</span><div class="ex-content">Si <span class="math">P(x) = x·sen(x)</span> watts, calcular <span class="math">P′(π/2)</span> e interpretar.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p>Regla del producto: <span class="math">P′(x) = sen(x) + x·cos(x)</span>.</p><p><span class="math">P′(π/2) = 1 + 0 = 1</span> W/unidad.</p><p class="si">La potencia crece a 1 W por unidad. La componente oscilatoria está en su pico, así que el cambio proviene del término lineal.</p></div></div>
+    </div>
+  </div>
+
+  <!-- FINANZAS -->
+  <div class="career-content" data-career="fi">
+    <div class="app-card">
+      <div class="app-header"><span class="app-num">App 01</span><h4>Sensibilidad de la demanda al precio (elasticidad puntual)</h4></div>
+      <div class="app-body">
+        <div class="example-stmt">La demanda diaria es <span class="math">D(p) = 1000·cos(p/20) + 500/p</span>, con <span class="math">p ∈ [10, 50]</span> USD. Calcular la sensibilidad en <span class="math">p = 30</span>.</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Derivar cada término.</strong></div><div class="step-math">D′(p) = −50·sen(p/20) − 500/p²</div></li>
+          <li><div class="step-text"><strong>Evaluar en p = 30.</strong></div><div class="step-math">sen(1.5) ≈ 0.9975</div><div class="step-math">D′(30) ≈ −50.43 unidades/USD</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>A USD 30, un aumento de un dólar reduce la demanda en <strong>~50 unidades</strong>. El producto es <strong>elástico</strong> en este rango de precios. Una rebaja moderada generaría incrementos significativos en volumen; un alza pequeña podría comprometer la rotación.</p></div>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-header"><span class="app-num">App 02</span><h4>Optimización del nivel de producción para máxima ganancia</h4></div>
+      <div class="app-body">
+        <div class="example-stmt">La ganancia es <span class="math">G(x) = −2x³ + 30x² − 96x + 150</span> (miles USD), donde <span class="math">x</span> son miles de unidades. Determinar el nivel óptimo.</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Calcular G′(x).</strong></div><div class="step-math">G′(x) = −6x² + 60x − 96</div></li>
+          <li><div class="step-text"><strong>Hallar puntos críticos.</strong></div><div class="step-math">−6(x − 2)(x − 8) = 0 ⇒ x = 2 ó x = 8</div></li>
+          <li><div class="step-text"><strong>Aplicar criterio de segunda derivada.</strong></div><div class="step-math">G″(x) = −12x + 60</div><div class="step-math">G″(2) = 36 &gt; 0 ⇒ mínimo | G″(8) = −36 &lt; 0 ⇒ máximo</div></li>
+          <li><div class="step-text"><strong>Calcular las ganancias.</strong></div><div class="step-math">G(2) = 62 (miles USD) | G(8) = 278 (miles USD)</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>El nivel óptimo es <strong>8.000 unidades</strong>, con ganancia máxima de <strong>USD 278.000</strong>. Vender 2.000 unidades es un mínimo local que la empresa debe evitar. Producir más allá de 8.000 reduciría la ganancia debido al término cúbico negativo (costos crecientes).</p></div>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="app-header"><span class="app-num">App 03</span><h4>Análisis de la tasa de cambio USD/COP en horizonte anual</h4></div>
+      <div class="app-body">
+        <div class="example-stmt">La tasa USD/COP es <span class="math">R(t) = 4000 + 200·sen(πt/6) + 10t</span>, con <span class="math">t</span> en meses. Determinar momentos de cambio máximo.</div>
+        <ol class="steps">
+          <li><div class="step-text"><strong>Calcular R′(t).</strong></div><div class="step-math">R′(t) = (100π/3)·cos(πt/6) + 10</div></li>
+          <li><div class="step-text"><strong>La tasa de cambio máxima ocurre donde R″ = 0.</strong></div><div class="step-math">R″(t) = −(100π²/18)·sen(πt/6) = 0 ⇒ t = 0, 6, 12</div></li>
+          <li><div class="step-text"><strong>Evaluar R′ en estos puntos.</strong></div><div class="step-math">R′(0) ≈ 114.72 COP/mes (subida máxima)</div><div class="step-math">R′(6) ≈ −94.72 COP/mes (bajada máxima)</div></li>
+          <li><div class="step-text"><strong>Concavidad.</strong></div><div class="step-math">t ∈ (0, 6): cóncava abajo (∩) | t ∈ (6, 12): cóncava arriba (∪)</div></li>
+        </ol>
+        <div class="interp"><span class="lbl">Interpretación</span><p>La tasa crece más rápido al inicio y al final del año; decrece más rápido en el mes 6. Para un importador, el momento óptimo para asegurar dólares es <strong>alrededor del mes 6</strong>. Para un exportador, las ventanas de mejor conversión son los inicios del año.</p></div>
+      </div>
+    </div>
+    <div class="exercises-section">
+      <h4>Ejercicios de práctica</h4>
+      <div class="exercise"><span class="ex-num">Ej. 1</span><div class="ex-content">La utilidad es <span class="math">U(x) = 50x − x²/100</span>. Hallar el nivel óptimo de operación.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p><span class="math">U′(x) = 50 − x/50 = 0 ⇒ x = 2500</span>. <span class="math">U″(x) = −1/50 &lt; 0</span> ⇒ máximo.</p><p class="si">Utilidad máxima de USD 62.500 con 2.500 unidades. Más allá, los costos cuadráticos absorben el ingreso lineal.</p></div></div>
+      <div class="exercise"><span class="ex-num">Ej. 2</span><div class="ex-content">La tasa de cambio es <span class="math">TC(t) = 3500 + 100·sen(t)</span>. Calcular <span class="math">TC′(π/3)</span>.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p><span class="math">TC′(t) = 100·cos(t)</span>; <span class="math">TC′(π/3) = 50</span> COP por unidad de tiempo.</p><p class="si">La tasa sube a 50 pesos por unidad —presión alcista para quien debe comprar dólares.</p></div></div>
+      <div class="exercise"><span class="ex-num">Ej. 3</span><div class="ex-content">El ingreso es <span class="math">I(p) = p·(1000 − 20p)</span>. Hallar el precio que maximiza el ingreso.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p><span class="math">I(p) = 1000p − 20p²</span>. <span class="math">I′(p) = 1000 − 40p = 0 ⇒ p = 25</span>.</p><p><span class="math">I″(p) = −40 &lt; 0</span> ⇒ máximo. <span class="math">I(25) = 12500</span>.</p><p class="si">Precio óptimo USD 25, ingreso máximo USD 12.500.</p></div></div>
+      <div class="exercise"><span class="ex-num">Ej. 4</span><div class="ex-content">El riesgo de un portafolio es <span class="math">R(x) = x³ − 12x² + 45x</span>. Identificar puntos críticos y concavidad.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p><span class="math">R′(x) = 3(x−3)(x−5) = 0 ⇒ x = 3, x = 5</span>.</p><p><span class="math">R″(3) = −6</span> (máximo); <span class="math">R″(5) = 6</span> (mínimo). Inflexión: <span class="math">x = 4</span>.</p><p class="si">Riesgo máximo en x = 3; mínimo en x = 5; inflexión en x = 4 señala el cambio de aceleración.</p></div></div>
+      <div class="exercise"><span class="ex-num">Ej. 5</span><div class="ex-content">La demanda es <span class="math">D(p) = 5000·cos(p/10)</span>. Calcular <span class="math">D′(p)</span> y analizar en <span class="math">p = 15</span>.</div><button class="toggle-sol">Mostrar solución</button><div class="sol"><p>Regla de la cadena: <span class="math">D′(p) = −500·sen(p/10)</span>.</p><p>En <span class="math">p = 15</span>: <span class="math">D′(15) ≈ −498.75 unidades/USD</span>.</p><p class="si">A USD 15, un aumento de un dólar reduce la demanda en ~499 unidades —sensibilidad muy alta.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- VISUALIZADOR -->
+<section id="visualizador" class="section">
+  <h2 class="section-title">Visualizador</h2>
+  <p class="section-lede">Ingresa una función o selecciona una predefinida. Mueve el deslizador para ver la <strong>tangente animada</strong> y los valores de f, f′ y f″ en tiempo real. Activa "▶ Animar" para recorrer la curva.</p>
+  <div class="viz-ctrl">
+    <div class="viz-row">
+      <div class="viz-field">
+        <label><span class="dot"></span>Funciones predefinidas</label>
+        <select id="presetSel">
+          <option value="custom">— Personalizada —</option>
+          <option value="x^3 - 3*x" selected>f(x) = x³ − 3x</option>
+          <option value="x^3 - 3*x^2 + 2">f(x) = x³ − 3x² + 2</option>
+          <option value="x^4 - 6*x^2 + 5">f(x) = x⁴ − 6x² + 5</option>
+          <option value="sin(x)">f(x) = sen(x)</option>
+          <option value="sin(x)*cos(x)">f(x) = sen(x)·cos(x)</option>
+          <option value="sin(2*x)">f(x) = sen(2x)</option>
+          <option value="x*sin(x)">f(x) = x·sen(x)</option>
+          <option value="cos(x/2)">f(x) = cos(x/2)</option>
+          <option value="-2*x^3 + 30*x^2 - 96*x + 150">G(x) = Ganancia</option>
+          <option value="x^2 - 8*x + 20">T(x) = Tiempo respuesta</option>
+          <option value="exp(-x^2/4)*cos(2*x)">f(x) = e^(−x²/4)·cos(2x)</option>
+        </select>
+      </div>
+      <div class="viz-field" style="flex:2">
+        <label><span class="dot" style="background:var(--p)"></span>Ingresa tu función f(x)</label>
+        <input type="text" id="fnIn" value="x^3 - 3*x" placeholder="ej: sin(2*x) + x^2"/>
+      </div>
+    </div>
+    <div class="viz-row">
+      <div class="viz-field"><label><span class="dot" style="background:var(--c)"></span>x mínimo</label><input type="number" id="xMn" value="-3" step="0.5"/></div>
+      <div class="viz-field"><label><span class="dot" style="background:var(--c)"></span>x máximo</label><input type="number" id="xMx" value="3" step="0.5"/></div>
+      <div class="viz-field" style="flex:0"><button class="viz-btn" id="plotBtn">⟳ Graficar</button></div>
+      <div class="viz-field" style="flex:0"><button class="viz-btn play" id="playBtn">▶ Animar</button></div>
+      <div class="viz-field" style="flex:0"><button class="viz-btn sec" id="resetBtn">↺ Reiniciar</button></div>
+    </div>
+    <div class="slider-group">
+      <label>Posición de la tangente <span class="val" id="xLbl">x = 0.000</span></label>
+      <input type="range" class="slider" id="xSlider" min="0" max="100" value="50"/>
+    </div>
+    <div class="viz-row">
+      <div class="toggle-row">
+        <label class="tchk"><input type="checkbox" id="chFp" checked/> Mostrar f′(x)</label>
+        <label class="tchk"><input type="checkbox" id="chFpp"/> Mostrar f″(x)</label>
+        <label class="tchk"><input type="checkbox" id="chConc" checked/> Sombrear concavidad</label>
+        <label class="tchk"><input type="checkbox" id="chCrit" checked/> Puntos críticos</label>
+        <label class="tchk"><input type="checkbox" id="chTang" checked/> Tangente activa</label>
+      </div>
+    </div>
+    <div class="viz-hint"><strong>Sintaxis:</strong> <code>+</code><code>−</code><code>*</code><code>/</code><code>x^2</code><code>sin</code><code>cos</code><code>tan</code><code>sec</code><code>csc</code><code>cot</code><code>exp</code><code>ln</code><code>log</code><code>sqrt</code><code>abs</code><code>pi</code><code>e</code></div>
+    <div class="err-box" id="errBox"></div>
+  </div>
+
+  <div class="viz-canvas"><svg id="plotSvg" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid meet"></svg></div>
+
+  <div class="live-readout">
+    <div class="ro-item ro-x"><div class="ro-label">x</div><div class="ro-val" id="roX">0.000</div></div>
+    <div class="ro-item ro-fx"><div class="ro-label">f(x)</div><div class="ro-val" id="roFx">—</div></div>
+    <div class="ro-item ro-fp"><div class="ro-label">f′(x) — pendiente</div><div class="ro-val" id="roFp">—</div></div>
+    <div class="ro-item ro-fpp"><div class="ro-label">f″(x) — concavidad</div><div class="ro-val" id="roFpp">—</div></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="lsw" style="background:#EC4899;color:#EC4899"></span> f(x)</div>
+    <div class="legend-item"><span class="lsw" style="background:#F59E0B;color:#F59E0B"></span> f′(x)</div>
+    <div class="legend-item"><span class="lsw" style="background:#10B981;color:#10B981"></span> f″(x)</div>
+    <div class="legend-item"><span class="lsw" style="background:rgba(34,211,238,.4)"></span> Cóncava ↑</div>
+    <div class="legend-item"><span class="lsw" style="background:rgba(167,139,250,.4)"></span> Cóncava ↓</div>
+    <div class="legend-item"><span class="lsw" style="background:#A78BFA;color:#A78BFA"></span> Tangente</div>
+  </div>
+
+  <div class="viz-info">
+    <div class="info-panel"><h5>Puntos críticos</h5><ul id="critList"><li><em>Ingresa una función para comenzar.</em></li></ul></div>
+    <div class="info-panel"><h5>Puntos de inflexión</h5><ul id="inflList"><li><em>—</em></li></ul></div>
+    <div class="info-panel"><h5>Análisis de concavidad</h5><ul id="concList"><li><em>—</em></li></ul></div>
+  </div>
+</section>
+
+<!-- AUTOEVALUACIÓN -->
+<section id="autoevaluacion" class="section">
+  <h2 class="section-title">Autoevaluación</h2>
+  <p class="section-lede">Diez preguntas tipo Saber Pro con cuatro opciones. Retroalimentación inmediata tras cada respuesta. Al final, puntaje global con confetti.</p>
+  <div class="quiz-meta">
+    <div class="prog-disp">Respondidas: <strong id="answeredC">0</strong> · Correctas: <strong id="correctC">0</strong> de 10</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  <div id="quizBox"></div>
+  <div class="quiz-actions"><button class="viz-btn sec" id="resetQuizBtn">↺ Reiniciar autoevaluación</button></div>
+  <div class="results-card" id="resCard">
+    <h3>Resultado final</h3>
+    <div class="score-circle">
+      <svg width="160" height="160">
+        <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#06B6D4"/><stop offset="50%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#EC4899"/></linearGradient></defs>
+        <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+        <circle id="scoreArc" cx="80" cy="80" r="68" fill="none" stroke="url(#sg)" stroke-width="10" stroke-dasharray="0 427" stroke-linecap="round" style="filter:drop-shadow(0 0 12px rgba(139,92,246,.6))"/>
+      </svg>
+      <div class="score-text"><span id="scoreN">0</span><small>de 10</small></div>
+    </div>
+    <div class="verdict" id="verdictTxt"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="credit">Creado por Astrid Bolívar</div>
+  <div class="inst">Plataforma Interactiva · Cálculo Diferencial</div>
+</footer>
+
+<script>
+// ESTRELLAS
+(function(){const c=document.getElementById('stars');for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${3+Math.random()*4}s`;c.appendChild(s)}})();
+
+// TABS
+function goTab(t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tab="${t}"]`).classList.add('active');
+  document.getElementById(t).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.tab)));
+document.querySelectorAll('.wcard').forEach(c=>c.addEventListener('click',()=>c.dataset.jump&&goTab(c.dataset.jump)));
+
+document.querySelectorAll('.topic-btn').forEach(b=>b.addEventListener('click',()=>{
+  const t=b.dataset.topic;
+  document.querySelectorAll('.topic-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.topic-content').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelector(`.topic-content[data-topic="${t}"]`).classList.add('active');
+  if(t==='trig')drawTrig();if(t==='primera')drawCubic();
+}));
+document.querySelectorAll('.career-tab').forEach(b=>b.addEventListener('click',()=>{
+  const t=b.dataset.career;
+  document.querySelectorAll('.career-tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.career-content').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelector(`.career-content[data-career="${t}"]`).classList.add('active');
+}));
+document.querySelectorAll('.toggle-sol').forEach(b=>b.addEventListener('click',()=>{
+  const s=b.nextElementSibling,v=s.classList.toggle('visible');
+  b.classList.toggle('open');
+  b.textContent=v?'◂ Ocultar solución':'Mostrar solución';
+  if(v)b.classList.add('open');
+}));
+
+// PARSER & NUMERICS
+function parseFn(ex){
+  if(!ex||!ex.trim())throw new Error('Función vacía.');
+  let c=ex.replace(/\s+/g,'').replace(/\^/g,'**').replace(/\bln\b/g,'log').replace(/\bsen\b/g,'sin').replace(/π/g,'PI');
+  if(!/^[0-9xXeE+\-*/().,a-zA-Z_]+$/.test(c))throw new Error('Caracteres no permitidos.');
+  try{return new Function('x',`with(Math){return ${c};}`);}catch(e){throw new Error('Sintaxis inválida.');}
+}
+const D=(f,x,h=1e-5)=>(f(x+h)-f(x-h))/(2*h);
+const D2=(f,x,h=1e-3)=>(f(x+h)-2*f(x)+f(x-h))/(h*h);
+function bisect(g,a,b,tol=1e-8,n=60){
+  let fa=g(a),fb=g(b);
+  if(!isFinite(fa)||!isFinite(fb)||fa*fb>0)return null;
+  for(let i=0;i<n;i++){const m=(a+b)/2,fm=g(m);if(Math.abs(fm)<tol||(b-a)/2<tol)return m;if(fa*fm<0){b=m;fb=fm;}else{a=m;fa=fm;}}
+  return(a+b)/2;
+}
+function zeros(g,a,b,N=1500){
+  const zs=[],dx=(b-a)/N;let px=a,py=g(a);
+  for(let i=1;i<=N;i++){const x=a+i*dx,y=g(x);if(isFinite(py)&&isFinite(y)&&py*y<=0&&(py!==0||y!==0)){const z=bisect(g,px,x);if(z!==null&&(zs.length===0||Math.abs(z-zs[zs.length-1])>1e-4))zs.push(z);}px=x;py=y;}
+  return zs;
+}
+function concZones(g,a,b,N=800){
+  const zones=[],dx=(b-a)/N;let zs=a,cs=null;
+  for(let i=0;i<=N;i++){const x=a+i*dx;let y;try{y=g(x);}catch{continue;}if(!isFinite(y))continue;
+  const s=y>1e-6?'u':y<-1e-6?'d':null;if(s&&s!==cs){if(cs)zones.push({s:cs,a:zs,b:x});cs=s;zs=x;}}
+  if(cs)zones.push({s:cs,a:zs,b:b});return zones;
+}
+function niceTicks(mn,mx,n){
+  const r=mx-mn,st=Math.pow(10,Math.floor(Math.log10(r/n)));
+  const er=r/n/st,f=er>=7.5?10:er>=3.5?5:er>=1.5?2:1;
+  const ns=st*f,tks=[],s=Math.ceil(mn/ns)*ns;
+  for(let v=s;v<=mx+1e-9;v+=ns)tks.push(Math.round(v/ns)*ns);
+  return tks;
+}
+const fmtTk=v=>Math.abs(v)<1e-9?'0':(Math.abs(v)>=1000||Math.abs(v)<0.01?v.toExponential(1):parseFloat(v.toFixed(3)).toString());
+
+// MAIN PLOT
+const W=800,H=480,M={t:30,r:30,b:50,l:60};
+let VS={},playInt=null;
+
+function plot(){
+  const eb=document.getElementById('errBox');
+  eb.classList.remove('on');eb.textContent='';
+  const ex=document.getElementById('fnIn').value;
+  const xn=parseFloat(document.getElementById('xMn').value);
+  const xx=parseFloat(document.getElementById('xMx').value);
+  if(!isFinite(xn)||!isFinite(xx)||xx<=xn){eb.textContent='Rango inválido.';eb.classList.add('on');return;}
+  let f;try{f=parseFn(ex);f(0);}catch(e){eb.textContent='Error: '+e.message;eb.classList.add('on');return;}
+  const fp=x=>D(f,x),fpp=x=>D2(f,x);
+  const sFp=document.getElementById('chFp').checked;
+  const sFpp=document.getElementById('chFpp').checked;
+  const sConc=document.getElementById('chConc').checked;
+  const sCrit=document.getElementById('chCrit').checked;
+  const sTang=document.getElementById('chTang').checked;
+  const N=600,dx=(xx-xn)/N;
+  const fP=[],fpP=[],fppP=[];
+  let yn=Infinity,yx=-Infinity;
+  for(let i=0;i<=N;i++){
+    const x=xn+i*dx;
+    try{const y=f(x);if(isFinite(y)){fP.push({x,y});if(y<yn)yn=y;if(y>yx)yx=y;}else fP.push({x,y:NaN});}catch{fP.push({x,y:NaN});}
+    if(sFp){const yp=fp(x);if(isFinite(yp)){fpP.push({x,y:yp});if(yp<yn)yn=yp;if(yp>yx)yx=yp;}else fpP.push({x,y:NaN});}
+    if(sFpp){const ypp=fpp(x);if(isFinite(ypp)){fppP.push({x,y:ypp});if(ypp<yn)yn=ypp;if(ypp>yx)yx=ypp;}else fppP.push({x,y:NaN});}
+  }
+  if(!isFinite(yn)||!isFinite(yx)){eb.textContent='No se pudo evaluar la función.';eb.classList.add('on');return;}
+  const yr=yx-yn,pd=yr===0?1:yr*.15;yn-=pd;yx+=pd;
+  const pw=W-M.l-M.r,ph=H-M.t-M.b;
+  const sx=x=>M.l+((x-xn)/(xx-xn))*pw;
+  const sy=y=>M.t+((yx-y)/(yx-yn))*ph;
+  VS={f,fp,fpp,xn,xx,yn,yx,sx,sy};
+  let s=`<defs>
+    <filter id="gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="gls"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="gf" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#EC4899"/><stop offset="100%" stop-color="#F472B6"/></linearGradient>
+    <linearGradient id="gfp" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient>
+    <linearGradient id="gfpp" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#34D399"/></linearGradient>
+  </defs>`;
+  if(sConc){concZones(fpp,xn,xx).forEach(z=>{const x1=sx(z.a),x2=sx(z.b);s+=`<rect x="${x1}" y="${M.t}" width="${x2-x1}" height="${ph}" fill="${z.s==='u'?'rgba(34,211,238,.10)':'rgba(167,139,250,.10)'}" />`;});}
+  niceTicks(xn,xx,8).forEach(t=>{const x=sx(t);s+=`<line x1="${x}" y1="${M.t}" x2="${x}" y2="${M.t+ph}" stroke="rgba(255,255,255,.05)" stroke-width=".5"/>`;});
+  niceTicks(yn,yx,6).forEach(t=>{const y=sy(t);s+=`<line x1="${M.l}" y1="${y}" x2="${M.l+pw}" y2="${y}" stroke="rgba(255,255,255,.05)" stroke-width=".5"/>`;});
+  const x0=(0>=xn&&0<=xx)?sx(0):M.l,y0=(0>=yn&&0<=yx)?sy(0):M.t+ph;
+  s+=`<line x1="${M.l}" y1="${y0}" x2="${M.l+pw}" y2="${y0}" stroke="rgba(255,255,255,.30)" stroke-width="1.2"/>`;
+  s+=`<line x1="${x0}" y1="${M.t}" x2="${x0}" y2="${M.t+ph}" stroke="rgba(255,255,255,.30)" stroke-width="1.2"/>`;
+  niceTicks(xn,xx,8).forEach(t=>{const x=sx(t);s+=`<text x="${x}" y="${M.t+ph+16}" font-size="11" fill="#94A3B8" text-anchor="middle" font-family="Cambria,serif" font-style="italic">${fmtTk(t)}</text>`;});
+  niceTicks(yn,yx,6).forEach(t=>{const y=sy(t);s+=`<text x="${M.l-8}" y="${y+4}" font-size="11" fill="#94A3B8" text-anchor="end" font-family="Cambria,serif" font-style="italic">${fmtTk(t)}</text>`;});
+  s+=`<text x="${M.l+pw+6}" y="${y0+4}" font-size="13" fill="#CBD5E1" font-family="Cambria,serif" font-style="italic">x</text>`;
+  s+=`<text x="${x0-4}" y="${M.t-8}" font-size="13" fill="#CBD5E1" font-family="Cambria,serif" font-style="italic" text-anchor="end">y</text>`;
+  const bPath=pts=>{let d='',mn=true;pts.forEach(p=>{if(!isFinite(p.y)){mn=true;return;}const X=sx(p.x),Y=sy(p.y);if(Y<M.t-200||Y>M.t+ph+200){mn=true;return;}d+=(mn?' M ':' L ')+X.toFixed(2)+' '+Y.toFixed(2);mn=false;});return d.trim();};
+  if(sFpp&&fppP.length)s+=`<path d="${bPath(fppP)}" fill="none" stroke="url(#gfpp)" stroke-width="2" stroke-dasharray="2,3" filter="url(#gl)"/>`;
+  if(sFp&&fpP.length)s+=`<path d="${bPath(fpP)}" fill="none" stroke="url(#gfp)" stroke-width="2.2" stroke-dasharray="6,3" filter="url(#gl)"/>`;
+  s+=`<path d="${bPath(fP)}" fill="none" stroke="url(#gf)" stroke-width="2.8" filter="url(#gls)"/>`;
+  const sv=parseFloat(document.getElementById('xSlider').value);
+  const xc=xn+(sv/100)*(xx-xn);
+  if(sTang){try{const yc=f(xc),sl=fp(xc);if(isFinite(yc)&&isFinite(sl)){const ty1=yc+sl*(xn-xc),ty2=yc+sl*(xx-xc);s+=`<line x1="${sx(xn)}" y1="${sy(ty1)}" x2="${sx(xx)}" y2="${sy(ty2)}" stroke="#A78BFA" stroke-width="2" stroke-dasharray="4,4" opacity=".85" filter="url(#gl)"/>`;s+=`<circle cx="${sx(xc)}" cy="${sy(yc)}" r="8" fill="#A78BFA" opacity=".25"/>`;s+=`<circle cx="${sx(xc)}" cy="${sy(yc)}" r="5" fill="#A78BFA" stroke="#fff" stroke-width="2" filter="url(#gls)"/>`; }}catch{}}
+  if(sCrit){
+    zeros(fp,xn,xx).forEach(xcc=>{const ycc=f(xcc);if(!isFinite(ycc))return;const fc=fpp(xcc),tp=fc>1e-4?'min':fc<-1e-4?'max':'c';const col=tp==='max'?'#F43F5E':tp==='min'?'#10B981':'#A78BFA';const lbl=tp==='max'?'máx':tp==='min'?'mín':'crít';const X=sx(xcc),Y=sy(ycc);if(X<M.l-5||X>M.l+pw+5||Y<M.t-5||Y>M.t+ph+5)return;s+=`<circle cx="${X}" cy="${Y}" r="9" fill="${col}" opacity=".25"/>`;s+=`<circle cx="${X}" cy="${Y}" r="5" fill="${col}" stroke="#fff" stroke-width="2" filter="url(#gls)"/>`;s+=`<text x="${X+9}" y="${Y-9}" font-size="11" fill="${col}" font-family="Cambria,serif" font-style="italic" font-weight="600">${lbl} (${xcc.toFixed(2)}, ${ycc.toFixed(2)})</text>`;});
+    zeros(fpp,xn,xx).forEach(xi=>{const yi=f(xi);if(!isFinite(yi))return;const X=sx(xi),Y=sy(yi);if(X<M.l-5||X>M.l+pw+5||Y<M.t-5||Y>M.t+ph+5)return;s+=`<rect x="${X-5}" y="${Y-5}" width="10" height="10" fill="#FBBF24" stroke="#fff" stroke-width="1.5" transform="rotate(45 ${X} ${Y})" filter="url(#gl)"/>`;s+=`<text x="${X+10}" y="${Y+14}" font-size="11" fill="#FBBF24" font-family="Cambria,serif" font-style="italic" font-weight="600">infl (${xi.toFixed(2)}, ${yi.toFixed(2)})</text>`;});
+  }
+  document.getElementById('plotSvg').innerHTML=s;
+  updatePanels(f,fp,fpp,xn,xx);
+  updateReadout(xc);
+}
+
+function updatePanels(f,fp,fpp,a,b){
+  const crit=zeros(fp,a,b),infl=zeros(fpp,a,b),zones=concZones(fpp,a,b);
+  const cL=document.getElementById('critList');
+  cL.innerHTML=crit.length?crit.map(x=>{const y=f(x),fc=fpp(x);let bk='<span class="badge">crít</span>';if(fc>1e-4)bk='<span class="badge min">mínimo</span>';else if(fc<-1e-4)bk='<span class="badge max">máximo</span>';return`<li><span class="pt">(${x.toFixed(3)}, ${y.toFixed(3)})</span>${bk}</li>`;}).join(''):'<li><em>No detectados en el rango.</em></li>';
+  const iL=document.getElementById('inflList');
+  iL.innerHTML=infl.length?infl.map(x=>{const y=f(x);return`<li><span class="pt">(${x.toFixed(3)}, ${y.toFixed(3)})</span><span class="badge inf">inflexión</span></li>`;}).join(''):'<li><em>—</em></li>';
+  const zL=document.getElementById('concList');
+  zL.innerHTML=zones.length?zones.map(z=>`<li><span class="pt">(${z.a.toFixed(2)}, ${z.b.toFixed(2)})</span><span class="badge ${z.s==='u'?'up':'dn'}">${z.s==='u'?'∪ arriba':'∩ abajo'}</span></li>`).join(''):'<li><em>Sin cambios.</em></li>';
+}
+
+function updateReadout(xc){
+  if(!VS.f)return;
+  document.getElementById('xLbl').textContent=`x = ${xc.toFixed(3)}`;
+  document.getElementById('roX').textContent=xc.toFixed(3);
+  try{const y=VS.f(xc),yp=VS.fp(xc),ypp=VS.fpp(xc);
+    document.getElementById('roFx').textContent=isFinite(y)?y.toFixed(3):'—';
+    document.getElementById('roFp').textContent=isFinite(yp)?yp.toFixed(3):'—';
+    document.getElementById('roFpp').textContent=isFinite(ypp)?ypp.toFixed(3)+' '+(ypp>0.001?'∪':ypp<-0.001?'∩':'·'):'—';
+  }catch{['roFx','roFp','roFpp'].forEach(id=>document.getElementById(id).textContent='—');}
+}
+
+document.getElementById('plotBtn').addEventListener('click',plot);
+document.getElementById('presetSel').addEventListener('change',e=>{if(e.target.value!=='custom'){document.getElementById('fnIn').value=e.target.value;plot();}});
+document.getElementById('fnIn').addEventListener('keydown',e=>{if(e.key==='Enter')plot();});
+document.getElementById('xSlider').addEventListener('input',()=>plot());
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  if(playInt){clearInterval(playInt);playInt=null;document.getElementById('playBtn').classList.remove('on');document.getElementById('playBtn').innerHTML='▶ Animar';}
+  document.getElementById('fnIn').value='x^3 - 3*x';
+  document.getElementById('xMn').value=-3;document.getElementById('xMx').value=3;
+  document.getElementById('presetSel').value='x^3 - 3*x';
+  document.getElementById('xSlider').value=50;
+  ['chFp','chConc','chCrit','chTang'].forEach(id=>document.getElementById(id).checked=true);
+  document.getElementById('chFpp').checked=false;
+  plot();
+});
+['chFp','chFpp','chConc','chCrit','chTang'].forEach(id=>document.getElementById(id).addEventListener('change',plot));
+document.getElementById('playBtn').addEventListener('click',()=>{
+  const btn=document.getElementById('playBtn');
+  if(playInt){clearInterval(playInt);playInt=null;btn.classList.remove('on');btn.innerHTML='▶ Animar';return;}
+  btn.classList.add('on');btn.innerHTML='⏸ Pausar';
+  let v=parseFloat(document.getElementById('xSlider').value),dir=1;
+  playInt=setInterval(()=>{v+=dir*.6;if(v>=100){v=100;dir=-1;}if(v<=0){v=0;dir=1;}document.getElementById('xSlider').value=v;plot();},30);
+});
+window.addEventListener('load',()=>{plot();drawTrig();});
+
+// MINI VIZ
+function drawTrig(){
+  const svg=document.getElementById('trigSvg');if(!svg)return;
+  const W2=500,H2=200,m=20,a=-Math.PI,b=Math.PI,ym=-1.2,yM=1.2;
+  const sx=x=>m+((x-a)/(b-a))*(W2-2*m),sy=y=>m+((yM-y)/(yM-ym))*(H2-2*m);
+  let s=`<defs><linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#EC4899"/><stop offset="100%" stop-color="#A78BFA"/></linearGradient><filter id="gm"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  s+=`<line x1="${m}" y1="${sy(0)}" x2="${W2-m}" y2="${sy(0)}" stroke="rgba(255,255,255,.2)" stroke-width="1"/>`;
+  let p='';for(let i=0;i<=200;i++){const x=a+(i/200)*(b-a),y=Math.sin(x)*Math.cos(x);p+=(i===0?'M ':'L ')+sx(x)+' '+sy(y)+' ';}
+  s+=`<path d="${p}" fill="none" stroke="url(#tg)" stroke-width="2.5" filter="url(#gm)"/>`;
+  svg.innerHTML=s;
+}
+function drawCubic(){
+  const svg=document.getElementById('cubicSvg');if(!svg)return;
+  const W2=500,H2=220,m=20,a=-1,b=3.5,ym=-3,yM=3;
+  const sx=x=>m+((x-a)/(b-a))*(W2-2*m),sy=y=>m+((yM-y)/(yM-ym))*(H2-2*m);
+  let s=`<defs><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#06B6D4"/><stop offset="100%" stop-color="#EC4899"/></linearGradient><filter id="gm2"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  s+=`<line x1="${m}" y1="${sy(0)}" x2="${W2-m}" y2="${sy(0)}" stroke="rgba(255,255,255,.2)" stroke-width="1"/>`;
+  let p='';for(let i=0;i<=200;i++){const x=a+(i/200)*(b-a),y=x**3-3*x**2+2;p+=(i===0?'M ':'L ')+sx(x)+' '+sy(y)+' ';}
+  s+=`<path d="${p}" fill="none" stroke="url(#cg)" stroke-width="2.5" filter="url(#gm2)"/>`;
+  s+=`<circle cx="${sx(0)}" cy="${sy(2)}" r="6" fill="#F43F5E" stroke="#fff" stroke-width="2" filter="url(#gm2)"/>`;
+  s+=`<text x="${sx(0)+8}" y="${sy(2)-8}" fill="#FB7185" font-size="11" font-style="italic" font-family="Cambria,serif">máx</text>`;
+  s+=`<circle cx="${sx(2)}" cy="${sy(-2)}" r="6" fill="#10B981" stroke="#fff" stroke-width="2" filter="url(#gm2)"/>`;
+  s+=`<text x="${sx(2)+8}" y="${sy(-2)+16}" fill="#34D399" font-size="11" font-style="italic" font-family="Cambria,serif">mín</text>`;
+  s+=`<rect x="${sx(1)-5}" y="${sy(0)-5}" width="10" height="10" fill="#FBBF24" stroke="#fff" stroke-width="1.5" transform="rotate(45 ${sx(1)} ${sy(0)})"/>`;
+  s+=`<text x="${sx(1)+12}" y="${sy(0)+4}" fill="#FBBF24" font-size="11" font-style="italic" font-family="Cambria,serif">infl</text>`;
+  svg.innerHTML=s;
+}
+
+document.querySelectorAll('.mini-play-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  const tg=btn.dataset.mini,id=tg==='trig'?'trigSvg':'cubicSvg';
+  const svg=document.getElementById(id);if(!svg)return;
+  const D=tg==='trig'?{f:x=>Math.sin(x)*Math.cos(x),fp:x=>Math.cos(2*x),a:-Math.PI,b:Math.PI,ym:-1.2,yM:1.2}:{f:x=>x**3-3*x**2+2,fp:x=>3*x**2-6*x,a:-1,b:3.5,ym:-3,yM:3};
+  const W2=500,H2=tg==='trig'?200:220,m=20;
+  const sx=x=>m+((x-D.a)/(D.b-D.a))*(W2-2*m),sy=y=>m+((D.yM-y)/(D.yM-D.ym))*(H2-2*m);
+  let fr=0;btn.disabled=true;btn.textContent='▣ Animando…';
+  const base=tg==='trig'?drawTrig:drawCubic;
+  const id2=setInterval(()=>{
+    const t=fr/200,x=D.a+t*(D.b-D.a),y=D.f(x),sl=D.fp(x);
+    const ty1=y+sl*(D.a-x),ty2=y+sl*(D.b-x);
+    base();
+    svg.innerHTML+=`<line x1="${sx(D.a)}" y1="${sy(ty1)}" x2="${sx(D.b)}" y2="${sy(ty2)}" stroke="#A78BFA" stroke-width="2" stroke-dasharray="4,4" opacity=".85"/><circle cx="${sx(x)}" cy="${sy(y)}" r="6" fill="#A78BFA" stroke="#fff" stroke-width="2"/>`;
+    fr++;if(fr>200){clearInterval(id2);btn.disabled=false;btn.textContent='▶ Animar tangente';base();}
+  },25);
+}));
+
+// QUIZ
+const QZ=[
+  {q:'Calcular la derivada de <span class="math">f(x) = sen(2x)</span>.',opts:['cos(2x)','2·cos(2x)','−2·cos(2x)','cos(x²)'],ok:1,fb:['Olvidaste aplicar la regla de la cadena: la derivada externa cos(2x) debe multiplicarse por la derivada interna, que es 2.','✓ Aplicaste la regla de la cadena: derivada externa cos(2x) por derivada interna 2.','Atención al signo: la derivada de sen es cos (positivo), no −cos.','No: en la regla de la cadena se evalúa la derivada externa en el argumento interno (2x).']},
+  {q:'Dada <span class="math">f(x) = (3x² + 1)⁵</span>, su derivada es:',opts:['5·(3x² + 1)⁴','30x·(3x² + 1)⁴','6x·(3x² + 1)⁴','5·(6x)⁴'],ok:1,fb:['Falta multiplicar por la derivada de la función interna: 6x.','✓ 5·(3x²+1)⁴ · 6x = 30x·(3x²+1)⁴.','El factor numérico está incompleto: el exponente baja como 5, y la derivada interna aporta 6x. Producto: 30x.','No: la derivada interna no se eleva al exponente.']},
+  {q:'Los puntos críticos de <span class="math">f(x) = x³ − 12x</span> son:',opts:['x = 0, x = 12','x = −2, x = 2','x = −4, x = 4','x = 3, x = −3'],ok:1,fb:['Confundiste el cálculo: f′(x) = 3x² − 12.','✓ f′(x) = 3x² − 12 = 0 ⇒ x² = 4 ⇒ x = ±2.','Resolviste mal: 3x² − 12 = 0 da x² = 4, no x² = 16.','Esos valores no anulan f′(x).']},
+  {q:'Para <span class="math">f(x) = x³ − 3x</span>, en <span class="math">x = 1</span>:',opts:['f″(1) = 6, mínimo local','f″(1) = −6, máximo local','f″(1) = 0, inconcluso','No es punto crítico'],ok:0,fb:['✓ f′(x) = 3x² − 3 = 0 ⇒ x = ±1. f″(x) = 6x; f″(1) = 6 &gt; 0 ⇒ mínimo local.','Confundiste el signo: f″(1) = +6, es mínimo.','f″(1) = 6, no 0. El criterio es concluyente.','Sí lo es: f′(1) = 0.']},
+  {q:'La función <span class="math">f(x) = x⁴ − 6x² + 5</span> es cóncava hacia arriba en:',opts:['(−∞, −1) ∪ (1, ∞)','(−1, 1)','Toda la recta real','(−2, 2)'],ok:0,fb:['✓ f″(x) = 12x² − 12 &gt; 0 cuando x² &gt; 1, es decir, |x| &gt; 1.','Allí f″(x) &lt; 0, cóncava hacia abajo.','No: la concavidad cambia en x = ±1.','El cambio ocurre en x = ±1, no en ±2.']},
+  {q:'El tiempo de respuesta de un servidor es <span class="math">T(t) = t² − 8t + 20</span> segundos. ¿Cuándo es mínimo?',opts:['t = 2 s','t = 4 s','t = 8 s','No tiene mínimo'],ok:1,fb:['Verifica: T′(t) = 2t − 8 = 0 ⇒ t = 4.','✓ T′(t) = 2t − 8 = 0 ⇒ t = 4. T″(t) = 2 &gt; 0 confirma mínimo.','En t = 8, T′(8) = 8 ≠ 0.','Sí tiene mínimo: parábola con coeficiente positivo.']},
+  {q:'La complejidad de un algoritmo es <span class="math">C(n) = sen(n)·n</span>. ¿Cuál es <span class="math">C′(n)</span>?',opts:['cos(n)','cos(n)·n','sen(n) + n·cos(n)','cos(n)·sen(n)'],ok:2,fb:['Olvidaste que es producto: aplicar regla del producto.','Aplicaste solo a un término. Falta sen(n).','✓ Regla del producto: cos(n)·n + sen(n).','Esa es la derivada de (1/2)·sen²(n).']},
+  {q:'La ganancia es <span class="math">G(x) = −x² + 100x − 500</span>. ¿Qué nivel x maximiza la ganancia?',opts:['x = 25','x = 50','x = 100','x = 500'],ok:1,fb:['No: G′(25) = 50 ≠ 0.','✓ G′(x) = −2x + 100 = 0 ⇒ x = 50. G″(x) = −2 &lt; 0 confirma máximo.','En x = 100, G′(100) = −100 ≠ 0.','Confundiste la constante con el valor de la variable.']},
+  {q:'La demanda es <span class="math">D(p) = 1000·cos(p/10)</span>. ¿Cuál es <span class="math">D′(p)</span>?',opts:['−100·sen(p/10)','−1000·sen(p/10)','100·sen(p/10)','1000·sen(p/10)'],ok:0,fb:['✓ D′(p) = 1000·(−sen(p/10))·(1/10) = −100·sen(p/10).','Olvidaste multiplicar por la derivada interna (1/10).','Falta el signo negativo: la derivada de cos es −sen.','Errores combinados: signo y factor de cadena.']},
+  {q:'¿En qué valor de x tiene <span class="math">f(x) = x³ − 6x² + 9x</span> un punto de inflexión?',opts:['x = 0','x = 1','x = 2','x = 3'],ok:2,fb:['En x = 0, f″(0) = −12, no cero.','En x = 1, f″(1) = −6, no cero.','✓ f″(x) = 6x − 12 = 0 ⇒ x = 2.','En x = 3, f″(3) = 6, no cero.']}
+];
+
+const QS={ans:new Array(QZ.length).fill(null),done:0,ok:0};
+
+function renderQ(){
+  const c=document.getElementById('quizBox');
+  c.innerHTML=QZ.map((q,i)=>`
+    <div class="qcard" data-q="${i}">
+      <div class="q-num">Pregunta ${String(i+1).padStart(2,'0')} · de ${QZ.length}</div>
+      <div class="q-text">${q.q}</div>
+      <ul class="options">
+        ${q.opts.map((o,j)=>`<li class="option" data-opt="${j}"><span class="opt-letter">${String.fromCharCode(65+j)}</span><span>${o}</span></li>`).join('')}
+      </ul>
+      <div class="feedback"></div>
+    </div>`).join('');
+  c.querySelectorAll('.option').forEach(o=>o.addEventListener('click',()=>{
+    const card=o.closest('.qcard'),qi=parseInt(card.dataset.q);
+    if(QS.ans[qi]!==null)return;
+    answerQ(qi,parseInt(o.dataset.opt));
+  }));
+}
+
+function answerQ(qi,oi){
+  QS.ans[qi]=oi;QS.done++;
+  const ok=QZ[qi].ok===oi;if(ok)QS.ok++;
+  const card=document.querySelector(`.qcard[data-q="${qi}"]`);
+  card.classList.add(ok?'correct':'incorrect');
+  if(!ok)card.classList.add('shake');
+  card.querySelectorAll('.option').forEach((o,j)=>{
+    o.classList.add('disabled');
+    if(j===QZ[qi].ok)o.classList.add('correct-answer');
+    if(j===oi&&!ok)o.classList.add('wrong-answer');
+  });
+  const fb=card.querySelector('.feedback');
+  fb.classList.add('visible',ok?'correct':'incorrect');
+  fb.innerHTML=`<span class="flbl">${ok?'Respuesta correcta':'Respuesta incorrecta'}</span>${QZ[qi].fb[oi]}`;
+  if(ok)confetti(20);
+  document.getElementById('answeredC').textContent=QS.done;
+  document.getElementById('correctC').textContent=QS.ok;
+  document.getElementById('progFill').style.width=(QS.done/QZ.length*100)+'%';
+  if(QS.done===QZ.length)setTimeout(showRes,600);
+}
+
+function showRes(){
+  const card=document.getElementById('resCard');card.classList.add('visible');
+  const pct=QS.ok/QZ.length,tgt=QS.ok;
+  let n=0;const ct=setInterval(()=>{n++;document.getElementById('scoreN').textContent=n;if(n>=tgt)clearInterval(ct);},80);
+  const arc=document.getElementById('scoreArc'),ci=2*Math.PI*68;
+  setTimeout(()=>arc.setAttribute('stroke-dasharray',`${pct*ci} ${ci}`),100);
+  const verdicts=['Es momento de retomar los fundamentos. Trabaja secuencialmente con los tutoriales y vuelve a esta autoevaluación.','Desempeño en construcción. Se recomienda revisar los tutoriales antes de reintentar.','Desempeño aceptable. Revisa regla de la cadena y criterios de extremos.','Muy buen desempeño. Consolida los puntos finos revisando las preguntas falladas.','Excelente desempeño. Dominas con solvencia todos los criterios del cálculo diferencial.'];
+  const idx=pct===1?4:pct>=.8?3:pct>=.6?2:pct>=.4?1:0;
+  document.getElementById('verdictTxt').textContent=verdicts[idx];
+  if(pct>=.7)confetti(80);
+  card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+document.getElementById('resetQuizBtn').addEventListener('click',()=>{
+  QS.ans=new Array(QZ.length).fill(null);QS.done=0;QS.ok=0;
+  document.getElementById('answeredC').textContent='0';
+  document.getElementById('correctC').textContent='0';
+  document.getElementById('progFill').style.width='0%';
+  document.getElementById('resCard').classList.remove('visible');
+  renderQ();
+});
+renderQ();
+
+function confetti(n){
+  const C=document.getElementById('cfBox');
+  const cols=['#8B5CF6','#EC4899','#06B6D4','#10B981','#F59E0B','#A78BFA','#F472B6'];
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div');c.className='confetti';
+    c.style.cssText=`left:${Math.random()*100}vw;background:${cols[~~(Math.random()*cols.length)]};animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*.4}s;transform:rotate(${Math.random()*360}deg);border-radius:${Math.random()>.5?'50%':'2px'}`;
+    C.appendChild(c);setTimeout(()=>c.remove(),4500);
+  }
+}
+</script>
+</body>
+</html>
